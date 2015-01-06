@@ -82,6 +82,7 @@ AC_DEFUN([CONFIG_OPTION_MYSQL],[
         MYSQL_INC="-I$ac_mysql_source_dir/sql"
         MYSQL_INC="$MYSQL_INC -I$ac_mysql_source_dir/include"
         MYSQL_INC="$MYSQL_INC -I$ac_mysql_source_dir/regex"
+        MYSQL_INC="$MYSQL_INC -I$ac_mysql_source_dir/pcre"
         MYSQL_INC="$MYSQL_INC -I$ac_mysql_source_dir"
         AC_SUBST(MYSQL_INC)
         if test -f "$ac_mysql_source_dir/VERSION"; then
