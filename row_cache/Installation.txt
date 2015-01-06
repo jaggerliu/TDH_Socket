@@ -8,7 +8,8 @@ How to install row cache for innodb. The patch is for mysql 5.1.48 or mysql 5.5.
       c) Apply the patch in the source root directory .
          patch -p0 < ./row_cache_for_mysql.5.1.48_2011_05_11.diff
       d) Configure.
-         CFLAGS="-O3" CXX=gcc CXXFLAGS="-O3 -felide-constructors -fno-exceptions -fno-rtti" ./configure --prefix=/usr/mysql --with-extra-charsets=all --with-plugins=partition,heap,innobase,myisam,myisammrg,csv --enable-assembler
+         CFLAGS="-O3" CXX=gcc CXXFLAGS="-O3 -felide-constructors -fno-exceptions -fno-rtti" 
+         ./configure --prefix=/usr/mysql --with-extra-charsets=all --with-plugins=partition,heap,innobase,myisam,myisammrg,csv --enable-assembler
       e) make && make install
       
 2.Setting
