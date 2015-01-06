@@ -7,7 +7,7 @@ noinst_HEADERS = mysql_inc.hpp tdh_socket_config.hpp tdh_socket_handler.hpp tdh_
 					tdh_socket_decode_request_binary.hpp tdh_socket_decode_request_binary_v2.hpp \
 					tdh_socket_request_thread.hpp \
 					tdh_socket_table_balance.hpp tdh_socket_thd.hpp default_mysql_sysvar_for_tdh_socket.hpp
-tdhsocket_la_LDFLAGS = -module ../libtdhs/libtdhs.la
+tdhsocket_la_LDFLAGS = -module ../libtdhs/libtdhs.la -L/home/db/mariadb-10.0.15/libservices -lmysqlservices
 tdhsocket_la_CFLAGS = $(AM_CFLAGS) $(MYSQL_INC) $(MYSQL_CFLAGS)  -I../libtdhs $(EASY_INCLUDES)
 tdhsocket_la_CXXFLAGS = ${tdhsocket_la_CFLAGS}
 tdhsocket_la_SOURCES = tdh_socket.cpp tdh_socket_config.cpp tdh_socket_handler.cpp  \
@@ -20,6 +20,7 @@ tdhsocket_la_SOURCES = tdh_socket.cpp tdh_socket_config.cpp tdh_socket_handler.c
 						tdh_socket_table_balance.cpp
 
 am__DEPENDENCIES_1=../libtdhs/.libs/libtdhs.a
+EXTRA_DIST = progress_report_service.c
 ${PRESET_LDADD}:
 	rm -f ${top_srcdir}/libtdhs/libtdhs.la
 	cd ${top_srcdir}/libtdhs && make

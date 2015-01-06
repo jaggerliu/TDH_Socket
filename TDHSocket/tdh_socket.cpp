@@ -13,8 +13,10 @@
  Version     :
  ============================================================================
  */
+
+
 #include "tdh_socket_config.hpp"
-#include "debug_util.hpp"
+//#include "debug_util.hpp"
 #include "tdh_socket_protocol.hpp"
 #include "tdh_socket_handler.hpp"
 #include "tdh_socket_share.hpp"
@@ -24,6 +26,7 @@
 #include "tdh_socket_statistic.hpp"
 #include "tdh_socket_request_thread.hpp"
 #include "default_mysql_sysvar_for_tdh_socket.hpp"
+
 
 #include "mysql_inc.hpp"
 #include <stdlib.h>
@@ -36,6 +39,7 @@
 #include <easy_io.h>
 #include <easy_define.h>
 #include <easy_request.h>
+
 
 /*
  Disable __attribute__() on non-gcc compilers.
@@ -707,14 +711,23 @@ static SHOW_VAR daemon_tdh_socket_status_variables[] = { { "Tdhs",
 		(char*) show_tdhs_vars, SHOW_FUNC }, { NullS, NullS, SHOW_LONG } };
 
 struct st_mysql_daemon tdh_socket_plugin = { MYSQL_DAEMON_INTERFACE_VERSION };
-/*
- Plugin library descriptor
- */mysql_declare_plugin (tdh_socket) { MYSQL_DAEMON_PLUGIN, &tdh_socket_plugin,
-"tdh_socket", "wentong@taobao.com", "proxy the handler",
-PLUGIN_LICENSE_GPL, tdh_socket_plugin_init, /* Plugin Init */
-tdh_socket_plugin_deinit, /* Plugin Deinit */
-0x0005 /* 0.5 */, daemon_tdh_socket_status_variables, /* status variables                */
-daemon_tdh_socket_system_variables, /* system variables                */
-NULL /* config options                  */
+
+maria_declare_plugin(handlersocket)
+{
+  MYSQL_DAEMON_PLUGIN,
+  &tdh_socket_plugin,
+  "tdh_socket",
+  "jagger.liu@gmail.com",
+  "Direct access into InnoDB",
+  PLUGIN_LICENSE_BSD,
+  tdh_socket_plugin_init,
+  tdh_socket_plugin_deinit,
+  0x0005 /* 1.0 */,
+  daemon_tdh_socket_status_variables,
+  daemon_tdh_socket_system_variables,
+  "0.5",
+  MariaDB_PLUGIN_MATURITY_BETA
 }
-mysql_declare_plugin_end;
+maria_declare_plugin_end;
+
+

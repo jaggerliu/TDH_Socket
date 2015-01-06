@@ -219,9 +219,9 @@ static TDHS_INLINE int parse_index(tdhs_table_t &tdhs_table,
 		const tdhs_string_t* key, const uint32_t key_num) {
 	TABLE *table = tdhs_table.table;
 	KEY& kinfo = table->key_info[tdhs_table.idxnum];
-	if (key_num > kinfo.key_parts) {
+	if (key_num > kinfo.user_defined_key_parts) {
 		easy_warn_log( "TDHS: parse index key_parts:real [%d] request [%d]\n",
-				kinfo.key_parts, key_num);
+				kinfo.user_defined_key_parts, key_num);
 		return TDHS_PARSE_INDEX_FAILED_CANNOT_MATCH_KEY_NUM;
 	}
 	return TDHS_PARSE_INDEX_DONE;
@@ -304,7 +304,7 @@ static TDHS_INLINE int tdhs_open_index(tdhs_table_t& tdhs_table,
 		if (index_size > 0) {
 			for (uint i = 0; i < table->s->keys; ++i) {
 				KEY& kinfo = table->key_info[i];
-				if (index_size <= kinfo.key_parts) {
+				if (index_size <= kinfo.user_defined_key_parts) {
 					size_t k_idx = 0;
 					for (; k_idx < index_size; k_idx++) {
 						const KEY_PART_INFO &kpt = kinfo.key_part[k_idx];
@@ -633,11 +633,11 @@ static TDHS_INLINE int response_record(tdhs_table_t& tdhs_table,
 }
 
 static TDHS_INLINE int save_now(THD *thd, Field *field) {
-	Item_func_now_local now;
-	if (now.fix_fields(thd, NULL) != FALSE) {
+	Item_func_now_local *now = new Item_func_now_local(0);
+	if (now->fix_fields(thd, NULL) != FALSE) {
 		return -1;
 	}
-	return now.save_in_field(field, 0);
+	return now->save_in_field(field, 0);
 }
 
 static TDHS_INLINE int create_response_for_update(tdhs_table_t& tdhs_table,
@@ -776,7 +776,7 @@ static TDHS_INLINE void end_count_record(tdhs_table_t& tdhs_table,
 static TDHS_INLINE int index_prev_same(handler * const hnd, TABLE *table,
 		const uchar *key, uint keylen) {
 	int r;
-	if (!(r = hnd->index_prev(table->record[0]))) {
+	if (!(r = hnd->ha_index_prev(table->record[0]))) {
 		if (key_cmp_if_same(table, key, hnd->active_index, keylen)) {
 			r = HA_ERR_END_OF_FILE;
 		}

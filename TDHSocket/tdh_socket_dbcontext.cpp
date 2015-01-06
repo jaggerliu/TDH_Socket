@@ -512,9 +512,9 @@ int tdhs_dbcontext::execute(easy_request_t *r) {
     uint32_t seq_id = packet->seq_id;
 	tdhs_request_t &request = packet->req;
 	retcode = EASY_OK;
-	if (thd->killed != THD::NOT_KILLED) {
+	if (thd->killed != NOT_KILLED) {
 		easy_info_log("[%d] need switch to NO_KILLED at start!", thd->killed);
-		thd->killed = THD::NOT_KILLED;
+		thd->killed = NOT_KILLED;
 	}
 	thd->clear_error();
     set_process_info(seq_id, r);
@@ -580,9 +580,9 @@ int tdhs_dbcontext::execute(easy_request_t *r) {
 		}
 		easy_client_wait_cleanup(&client_wait.client_wait);
 	}
-	if (thd->killed != THD::NOT_KILLED) {
+	if (thd->killed != NOT_KILLED) {
 		easy_info_log("[%d] need switch to NO_KILLED at end!", thd->killed);
-		thd->killed = THD::NOT_KILLED;
+		thd->killed = NOT_KILLED;
 	}
     thd->reset_query();
 	return retcode != EASY_OK ? retcode : ret;
@@ -761,7 +761,7 @@ TDHS_INLINE int tdhs_dbcontext::do_find(easy_request_t *req,
 		uint32_t skip = request.get.start;
 		int r = 0;
 		while (is_unlimited || limit != 0) {
-			if (this->thd->killed != THD::NOT_KILLED) {
+			if (this->thd->killed != NOT_KILLED) {
 				hnd->ha_index_or_rnd_end();
 				return tdhs_response_error(response,
 						CLIENT_STATUS_SERVICE_UNAVAILABLE,
@@ -772,28 +772,28 @@ TDHS_INLINE int tdhs_dbcontext::do_find(easy_request_t *req,
 				const key_part_map kpm = (1U
 						<< request.get.keys[in_index].key_field_num) - 1;
 				if (request.get.find_flag == TDHS_DEQ) {
-					r = hnd->index_read_last_map(tdhs_table.table->record[0],
+					r = hnd->ha_index_next_same(tdhs_table.table->record[0],
 							key_buf, kpm);
                 }else if(request.get.find_flag==TDHS_BETWEEN){
                     r = hnd->read_range_first(&between_start_key,
                                               &between_end_key,
                                               0, 1);
                 }else {
-					r = hnd->index_read_map(tdhs_table.table->record[0],
+					r = hnd->ha_index_read_map(tdhs_table.table->record[0],
 							key_buf, kpm, find_flag);
 				}
 			} else {
 				switch (find_flag) {
 				case HA_READ_BEFORE_KEY:
 				case HA_READ_KEY_OR_PREV:
-					r = hnd->index_prev(tdhs_table.table->record[0]);
+					r = hnd->ha_index_prev(tdhs_table.table->record[0]);
 					break;
 				case HA_READ_AFTER_KEY:
 				case HA_READ_KEY_OR_NEXT:
                     if(request.get.find_flag==TDHS_BETWEEN){
                         r = hnd->read_range_next();
                     }else{
-                        r = hnd->index_next(tdhs_table.table->record[0]);
+                        r = hnd->ha_index_next(tdhs_table.table->record[0]);
                     }
 					break;
 				case HA_READ_KEY_EXACT:
@@ -801,7 +801,7 @@ TDHS_INLINE int tdhs_dbcontext::do_find(easy_request_t *req,
 						r = index_prev_same(hnd, tdhs_table.table, key_buf,
 								key_len_sum);
 					} else {
-						r = hnd->index_next_same(tdhs_table.table->record[0],
+						r = hnd->ha_index_next_same(tdhs_table.table->record[0],
 								key_buf, key_len_sum);
 					}
 					break;

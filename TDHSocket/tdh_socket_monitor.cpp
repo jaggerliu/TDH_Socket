@@ -264,10 +264,10 @@ static void* monitor_thd_thread(void* p) {
 		set_thread_message(info, "TDHS:I'm working~");
 		{ //check if killed
 			tdhs_mysql_mutex_lock(&monitor_thd->mysys_var->mutex);
-			THD::killed_state st = monitor_thd->killed;
+			killed_state st = monitor_thd->killed;
 			tdhs_mysql_mutex_unlock(&monitor_thd->mysys_var->mutex);
 			easy_debug_log("TDHS:check monitor THD status [%d]", st);
-			if (st != THD::NOT_KILLED) {
+			if (st != NOT_KILLED) {
 				easy_error_log(
 						"TDHS: monitor thd st is %d ,should be stop eio!", st);
 				tdhs_close_cached_table();
@@ -311,7 +311,7 @@ static void* monitor_thd_thread(void* p) {
 				continue;
 			}
 			while (true) {
-				r = hnd->rnd_next(status_table->record[0]);
+				r = hnd->ha_rnd_next(status_table->record[0]);
 				if (r != 0 && r != HA_ERR_RECORD_DELETED) {
 
 					easy_debug_log("TDHS:rnd status need break [%d]", r);

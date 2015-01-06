@@ -102,10 +102,10 @@ static TDHS_INLINE int wait_server_to_start(THD *thd) {
 				&abstime);
 		tdhs_mysql_mutex_unlock(&LOCK_server_started);
 		tdhs_mysql_mutex_lock(&thd->mysys_var->mutex);
-		THD::killed_state st = thd->killed;
+		killed_state st = thd->killed;
 		tdhs_mysql_mutex_unlock(&thd->mysys_var->mutex);
 		tdhs_mysql_mutex_lock(&LOCK_server_started);
-		if (st != THD::NOT_KILLED) {
+		if (st != NOT_KILLED) {
 			r = -1;
 			break;
 		}

@@ -13,6 +13,7 @@
  *  Created on: 2011-9-29
  *      Author: wentong
  */
+#include <my_config.h>
 
 #include "tdh_socket_connection_context.hpp"
 #include "tdh_socket_encode_response.hpp"

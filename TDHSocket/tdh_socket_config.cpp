@@ -13,6 +13,8 @@
  *      Author: wentong
  */
 
+#include <my_config.h>
+
 #include "tdh_socket_config.hpp"
 
 namespace taobao {

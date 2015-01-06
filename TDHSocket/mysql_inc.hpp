@@ -22,7 +22,11 @@
 #define HAVE_CONFIG_H
 #endif
 
-#define MYSQL_DYNAMIC_PLUGIN
+
+#ifndef MYSQL_DYNAMIC_PLUGIN
+#define MYSQL_DYNAMIC_PLUGIN  99
+#endif
+
 #define MYSQL_SERVER 1
 
 #include "my_config.h"
@@ -30,6 +34,8 @@
 #include "mysql_version.h"
 
 #if MYSQL_VERSION_ID >= 50505
+
+#include <sys/types.h>
 #include <my_pthread.h>
 #include <sql_priv.h>
 #include "sql_class.h"
@@ -40,9 +46,13 @@
 #include <mysql/plugin.h>
 #include <transaction.h>
 #include <sql_base.h>
-#include "sql_show.h" //for schema_table
+#include "sql_show.h"
 
 #define safeFree(X) my_free(X)
+
+#undef pthread_cond_timedwait
+#undef pthread_mutex_lock
+#undef pthread_mutex_unlock
 
 #define  tdhs_mysql_cond_timedwait  mysql_cond_timedwait
 #define  tdhs_mysql_mutex_lock  mysql_mutex_lock
