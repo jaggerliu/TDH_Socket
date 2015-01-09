@@ -74,8 +74,7 @@ static TDHS_INLINE THD* init_THD(char* db, const void *stack_bottom,
 
 	tdhs_mysql_mutex_lock(&LOCK_thread_count);
 	thd->thread_id = thread_id++;
-	threads.append(thd);
-	++thread_count;
+	add_global_thread(thd);
 	tdhs_mysql_mutex_unlock(&LOCK_thread_count);
 	return thd;
 }
@@ -85,8 +84,8 @@ static TDHS_INLINE void destory_thd(THD *thd) {
 	my_pthread_setspecific_ptr(THR_THD, 0);
 
 	tdhs_mysql_mutex_lock(&LOCK_thread_count);
-	delete thd;
-	--thread_count;
+	remove_global_thread(thd);
+
 	tdhs_mysql_mutex_unlock(&LOCK_thread_count);
 	my_thread_end();
 	(void) tdhs_mysql_cond_broadcast(&COND_thread_count);
@@ -102,10 +101,10 @@ static TDHS_INLINE int wait_server_to_start(THD *thd) {
 				&abstime);
 		tdhs_mysql_mutex_unlock(&LOCK_server_started);
 		tdhs_mysql_mutex_lock(&thd->mysys_var->mutex);
-		killed_state st = thd->killed;
+		THD::killed_state st = thd->killed;
 		tdhs_mysql_mutex_unlock(&thd->mysys_var->mutex);
 		tdhs_mysql_mutex_lock(&LOCK_server_started);
-		if (st != NOT_KILLED) {
+		if (st != THD::NOT_KILLED) {
 			r = -1;
 			break;
 		}

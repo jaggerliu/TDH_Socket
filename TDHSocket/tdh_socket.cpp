@@ -14,7 +14,6 @@
  ============================================================================
  */
 
-
 #include "tdh_socket_config.hpp"
 //#include "debug_util.hpp"
 #include "tdh_socket_protocol.hpp"
@@ -27,7 +26,6 @@
 #include "tdh_socket_request_thread.hpp"
 #include "default_mysql_sysvar_for_tdh_socket.hpp"
 
-
 #include "mysql_inc.hpp"
 #include <stdlib.h>
 #include <ctype.h>
@@ -39,7 +37,6 @@
 #include <easy_io.h>
 #include <easy_define.h>
 #include <easy_request.h>
-
 
 /*
  Disable __attribute__() on non-gcc compilers.
@@ -106,7 +103,7 @@ static int tdh_socket_plugin_init(void *p) {
 		easy_error_log("TDHS:easy_thread_pool_create_for_handler error.\n");
 		DBUG_RETURN(1);
 	}
-    easy_io_var.no_redispatch = 1;
+	easy_io_var.no_redispatch = 1;
 	memset(&io_handler, 0, sizeof(io_handler));
 	io_handler.decode = taobao::tdhs_decode;
 	io_handler.encode = taobao::tdhs_encode;
@@ -116,9 +113,8 @@ static int tdh_socket_plugin_init(void *p) {
 	io_handler.cleanup = taobao::cleanup_request;
 //	io_handler.is_uthread = 1;
 
-	if ((listen =
-			easy_io_add_listen(NULL, taobao::tdhs_listen_port, &io_handler))
-			== NULL) {
+	if ((listen = easy_io_add_listen(NULL, taobao::tdhs_listen_port,
+			&io_handler)) == NULL) {
 		easy_error_log("TDHS:easy_io_add_listen error, port: %d, %s\n",
 				taobao::tdhs_listen_port, strerror(errno));
 		DBUG_RETURN(1);
@@ -479,139 +475,167 @@ void tdhs_group_commit_limit_update(THD* thd, //in: thread handle
 		const void* save) // in: immediate result from check function
 		{
 	tb_assert(var_ptr != NULL);tb_assert(save != NULL);
-	taobao::tdhs_group_commit_limits =
-			*static_cast<const int*>(save);
+	taobao::tdhs_group_commit_limits = *static_cast<const int*>(save);
 }
 
 static MYSQL_SYSVAR_INT(listen_port, taobao::tdhs_listen_port, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket listen port", NULL,NULL, DEFAULT_TDHS_LISTEN_PORT, 1024, 65535, 0);
+		"tdh socket listen port", NULL,NULL, DEFAULT_TDHS_LISTEN_PORT, 1024, 65535, 0)
+;
 
 static MYSQL_SYSVAR_UINT(log_level, taobao::tdhs_log_level, PLUGIN_VAR_RQCMDARG,
 		"tdhs log level  OFF:1 FATAL:2 ERROR:3 WARN:4 INFO:5 DEBUG:6 TRACE:7 ALL:8", NULL,
-		thds_log_level_update, DEFAULT_TDHS_LOG_LEVEL, 1, 8, 0);
+		thds_log_level_update, DEFAULT_TDHS_LOG_LEVEL, 1, 8, 0)
+;
 
 static MYSQL_SYSVAR_UINT(io_thread_num, taobao::tdhs_io_thread_num, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket io thread number", NULL,NULL, DEFAULT_TDHS_IO_THREAD_NUM, 1, 64, 0);
+		"tdh socket io thread number", NULL,NULL, DEFAULT_TDHS_IO_THREAD_NUM, 1, 64, 0)
+;
 
 static MYSQL_SYSVAR_UINT(thread_num, taobao::tdhs_thread_num, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket thread number", NULL,NULL, DEFAULT_TDHS_THREAD_NUM, 1, UINT_MAX, 0);
+		"tdh socket thread number", NULL,NULL, DEFAULT_TDHS_THREAD_NUM, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(slow_read_thread_num, taobao::tdhs_slow_read_thread_num, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket thread number for slow read", NULL,NULL, DEFAULT_TDHS_SLOW_READ_THREAD_NUM, 1, UINT_MAX, 0);
+		"tdh socket thread number for slow read", NULL,NULL, DEFAULT_TDHS_SLOW_READ_THREAD_NUM, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(write_thread_num, taobao::tdhs_write_thread_num, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket thread number for write", NULL,NULL, DEFAULT_TDHS_WRITE_THREAD_NUM, 1, UINT_MAX, 0);
+		"tdh socket thread number for write", NULL,NULL, DEFAULT_TDHS_WRITE_THREAD_NUM, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_BOOL(cache_table_on, taobao::tdhs_cache_table_on,
 		PLUGIN_VAR_NOCMDARG,
 		"switch cache_table ,when cache_table is off,it will close all cached tables!",
-		NULL, tdhs_cache_table_on_update, DEFAULT_TDHS_CACHE_TABLE_ON);
+		NULL, tdhs_cache_table_on_update, DEFAULT_TDHS_CACHE_TABLE_ON)
+;
 
 static MYSQL_SYSVAR_UINT(cache_table_num_for_thd, taobao::tdhs_cache_table_num_for_thd, PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket setting the cache table number for per thread", NULL,NULL, DEFAULT_TDHS_CACHE_TABLE_NUM_FOR_THD, 1, 255, 0);
+		"tdh socket setting the cache table number for per thread", NULL,NULL, DEFAULT_TDHS_CACHE_TABLE_NUM_FOR_THD, 1, 255, 0)
+;
 
 static MYSQL_SYSVAR_BOOL(optimize_on, taobao::tdhs_optimize_on,
 		PLUGIN_VAR_NOCMDARG,
 		"switch optimize!",
-		NULL, tdhs_optimize_on_update, DEFAULT_TDHS_OPTIMIZE_ON);
+		NULL, tdhs_optimize_on_update, DEFAULT_TDHS_OPTIMIZE_ON)
+;
 
 static MYSQL_SYSVAR_UINT(optimize_bloom_filter_group, taobao::tdhs_optimize_bloom_filter_group,
 		PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket optimize bloom filter group number(how many bloom filter work.)", NULL,NULL, DEFAULT_TDHS_OPTIMIZE_BLOOM_FILTER_GROUP, 1, UINT_MAX, 0);
+		"tdh socket optimize bloom filter group number(how many bloom filter work.)", NULL,NULL, DEFAULT_TDHS_OPTIMIZE_BLOOM_FILTER_GROUP, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(optimize_bloom_filter_num_buckets, taobao::tdhs_optimize_bloom_filter_num_buckets,
 		PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-		"tdh socket optimize bloom filter buckets num", NULL,NULL, DEFAULT_TDHS_OPTIMIZE_BLOOM_FILTER_NUM_BUCKETS, 1, UINT_MAX, 0);
+		"tdh socket optimize bloom filter buckets num", NULL,NULL, DEFAULT_TDHS_OPTIMIZE_BLOOM_FILTER_NUM_BUCKETS, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_INT(optimize_guess_hot_request_num, taobao::tdhs_optimize_guess_hot_request_num,
 		PLUGIN_VAR_RQCMDARG ,
-		"tdh socket optimize guess hot request num", NULL,thds_optimize_guess_hot_request_num_update, DEFAULT_TDHS_OPTIMIZE_GUESS_HOT_REQUEST_NUM, 1, INT_MAX, 0);
+		"tdh socket optimize guess hot request num", NULL,thds_optimize_guess_hot_request_num_update, DEFAULT_TDHS_OPTIMIZE_GUESS_HOT_REQUEST_NUM, 1, INT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(monitor_interval, taobao::tdhs_monitor_interval, PLUGIN_VAR_RQCMDARG,
 		"tdhs monitor interval (second) , for calc cache hit radio time interval", NULL,
-		thds_monitor_interval_update, DEFAULT_TDHS_MONITOR_INTERVAL, 1, UINT_MAX, 0);
+		thds_monitor_interval_update, DEFAULT_TDHS_MONITOR_INTERVAL, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(thread_strategy_requests_lv_1, taobao::tdhs_thread_strategy_requests_lv_1,
 		PLUGIN_VAR_RQCMDARG,
 		"tdhs thread_strategy_requests_lv_1 which innodb's Innodb_buffer_pool_read_requests ", NULL,
-		tdhs_thread_strategy_requests_lv_1_update, DEFAULT_TDHS_THREAD_STRATEGY_REQUESTS_LV_1, 1, UINT_MAX, 0);
+		tdhs_thread_strategy_requests_lv_1_update, DEFAULT_TDHS_THREAD_STRATEGY_REQUESTS_LV_1, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(thread_strategy_requests_lv_2, taobao::tdhs_thread_strategy_requests_lv_2,
 		PLUGIN_VAR_RQCMDARG,
 		"tdhs thread_strategy_requests_lv_2 which innodb's Innodb_buffer_pool_read_requests", NULL,
-		tdhs_thread_strategy_requests_lv_2_update, DEFAULT_TDHS_THREAD_STRATEGY_REQUESTS_LV_2, 1, UINT_MAX, 0);
+		tdhs_thread_strategy_requests_lv_2_update, DEFAULT_TDHS_THREAD_STRATEGY_REQUESTS_LV_2, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_BOOL(concurrency_insert, taobao::tdhs_concurrency_insert,
 		PLUGIN_VAR_NOCMDARG,
 		"switch concurrency_insert!",
-		NULL, tdhs_concurrency_insert_update, DEFAULT_TDHS_CONCURRENCY_INSERT);
+		NULL, tdhs_concurrency_insert_update, DEFAULT_TDHS_CONCURRENCY_INSERT)
+;
 
 static MYSQL_SYSVAR_BOOL(concurrency_update, taobao::tdhs_concurrency_update,
 		PLUGIN_VAR_NOCMDARG,
 		"switch tdhs_concurrency_update!",
-		NULL, tdhs_concurrency_update_update, DEFAULT_TDHS_CONCURRENCY_UPDATE);
+		NULL, tdhs_concurrency_update_update, DEFAULT_TDHS_CONCURRENCY_UPDATE)
+;
 
 static MYSQL_SYSVAR_BOOL(concurrency_delete, taobao::tdhs_concurrency_delete,
 		PLUGIN_VAR_NOCMDARG,
 		"switch concurrency_delete!",
-		NULL, tdhs_concurrency_delete_update, DEFAULT_TDHS_CONCURRENCY_DELETE);
+		NULL, tdhs_concurrency_delete_update, DEFAULT_TDHS_CONCURRENCY_DELETE)
+;
 
 static MYSQL_SYSVAR_BOOL(auth_on, taobao::tdhs_auth_on,
 		PLUGIN_VAR_NOCMDARG,
 		"switch need auth!",
-		NULL, tdhs_auth_on_update, DEFAULT_TDHS_AUTH_ON);
+		NULL, tdhs_auth_on_update, DEFAULT_TDHS_AUTH_ON)
+;
 
 static MYSQL_SYSVAR_STR(auth_read_code, taobao::tdhs_auth_read_code,
 		PLUGIN_VAR_OPCMDARG,
 		"The read code.",
 		NULL,
-		tdhs_auth_read_code_update, DEFAULT_TDHS_AUTH_READ_CODE);
+		tdhs_auth_read_code_update, DEFAULT_TDHS_AUTH_READ_CODE)
+;
 
 static MYSQL_SYSVAR_STR(auth_write_code, taobao::tdhs_auth_write_code,
 		PLUGIN_VAR_OPCMDARG,
 		"The write code.",
 		NULL,
-		tdhs_auth_write_code_update, DEFAULT_TDHS_AUTH_WRITE_CODE);
+		tdhs_auth_write_code_update, DEFAULT_TDHS_AUTH_WRITE_CODE)
+;
 
 static MYSQL_SYSVAR_BOOL(throttle_on, taobao::tdhs_throttle_on,
 		PLUGIN_VAR_NOCMDARG,
 		"switch need throttle!",
-		NULL, tdhs_throttle_on_update, DEFAULT_TDHS_THROTTLE_ON);
+		NULL, tdhs_throttle_on_update, DEFAULT_TDHS_THROTTLE_ON)
+;
 
 static MYSQL_SYSVAR_UINT(slow_read_limits, taobao::tdhs_slow_read_limits,
 		PLUGIN_VAR_RQCMDARG,
 		"for throttle,limit the slow read number ", NULL,
-		tdhs_slow_read_limits_update, DEFAULT_TDHS_SLOW_READ_LIMITS, 1, UINT_MAX, 0);
+		tdhs_slow_read_limits_update, DEFAULT_TDHS_SLOW_READ_LIMITS, 1, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(write_buff_size, taobao::tdhs_write_buff_size,
 		PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
 		"the write buffer size", NULL,
-		NULL, DEFAULT_TDHS_WRITE_BUFF_SIZE, 1*1024, UINT_MAX, 0);
+		NULL, DEFAULT_TDHS_WRITE_BUFF_SIZE, 1*1024, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_BOOL(group_commit, taobao::tdhs_group_commit,
 		PLUGIN_VAR_NOCMDARG,
 		"switch group commit!",
-		NULL, tdhs_group_commit_update, DEFAULT_TDHS_GROUP_COMMIT);
+		NULL, tdhs_group_commit_update, DEFAULT_TDHS_GROUP_COMMIT)
+;
 
 static MYSQL_SYSVAR_INT(group_commit_limits, taobao::tdhs_group_commit_limits,
 		PLUGIN_VAR_RQCMDARG,
 		"the limit of the group commit max number , 0 mean unlimited", NULL,
-		tdhs_group_commit_limit_update, DEFAULT_TDHS_GROUP_COMMIT_LIMITS,0, INT_MAX, 0);
+		tdhs_group_commit_limit_update, DEFAULT_TDHS_GROUP_COMMIT_LIMITS,0, INT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(quick_request_thread_task_count_limit, taobao::tdhs_quick_request_thread_task_count_limit,
 		PLUGIN_VAR_RQCMDARG,
 		"the limit of the quick request thread's max task count , 0 mean unlimited", NULL,
-		tdhs_quick_request_thread_task_count_limit_update, DEFAULT_TDHS_QUICK_REQUEST_THREAD_TASK_COUNT_LIMIT,0, UINT_MAX, 0);
+		tdhs_quick_request_thread_task_count_limit_update, DEFAULT_TDHS_QUICK_REQUEST_THREAD_TASK_COUNT_LIMIT,0, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(slow_request_thread_task_count_limit, taobao::tdhs_slow_request_thread_task_count_limit,
 		PLUGIN_VAR_RQCMDARG,
 		"the limit of the slow request thread's max task count , 0 mean unlimited", NULL,
-		tdhs_slow_request_thread_task_count_limit_update, DEFAULT_TDHS_SLOW_REQUEST_THREAD_TASK_COUNT_LIMIT,0, UINT_MAX, 0);
+		tdhs_slow_request_thread_task_count_limit_update, DEFAULT_TDHS_SLOW_REQUEST_THREAD_TASK_COUNT_LIMIT,0, UINT_MAX, 0)
+;
 
 static MYSQL_SYSVAR_UINT(write_request_thread_task_count_limit, taobao::tdhs_write_request_thread_task_count_limit,
 		PLUGIN_VAR_RQCMDARG,
 		"the limit of the write request thread's max task count , 0 mean unlimited", NULL,
-		tdhs_write_request_thread_task_count_limit_update, DEFAULT_TDHS_WRITE_REQUEST_THREAD_TASK_COUNT_LIMIT,0, UINT_MAX, 0);
+		tdhs_write_request_thread_task_count_limit_update, DEFAULT_TDHS_WRITE_REQUEST_THREAD_TASK_COUNT_LIMIT,0, UINT_MAX, 0)
+;
 
 /* warning: type-punning to incomplete type might break strict-aliasing
  * rules */
@@ -629,11 +653,11 @@ static struct st_mysql_sys_var *daemon_tdh_socket_system_variables[] = {
 		MYSQL_SYSVAR(concurrency_delete), MYSQL_SYSVAR(auth_on), MYSQL_SYSVAR(
 				auth_read_code), MYSQL_SYSVAR(auth_write_code), MYSQL_SYSVAR(
 				throttle_on), MYSQL_SYSVAR(slow_read_limits), MYSQL_SYSVAR(
-				write_buff_size), MYSQL_SYSVAR(group_commit),
-		MYSQL_SYSVAR(group_commit_limits),
-		MYSQL_SYSVAR(quick_request_thread_task_count_limit),
-		MYSQL_SYSVAR(slow_request_thread_task_count_limit),
-		MYSQL_SYSVAR(write_request_thread_task_count_limit), 0 };
+				write_buff_size), MYSQL_SYSVAR(group_commit), MYSQL_SYSVAR(
+				group_commit_limits), MYSQL_SYSVAR(
+				quick_request_thread_task_count_limit), MYSQL_SYSVAR(
+				slow_request_thread_task_count_limit), MYSQL_SYSVAR(
+				write_request_thread_task_count_limit), 0 };
 
 static char _optimize_status[1024];
 
@@ -669,39 +693,40 @@ static SHOW_VAR hs_status_variables[] = { { "table_open",
 		{ "throttle_count", (char*) &taobao::throttle_count, SHOW_LONGLONG }, //
 		{ "slow_read_done_count", (char*) &taobao::slow_read_io_num,
 				SHOW_LONGLONG }, //
-        { "io_status", (char*) &io_status, SHOW_CHAR_PTR }, //
+		{ "io_status", (char*) &io_status, SHOW_CHAR_PTR }, //
 		{ NullS, NullS, SHOW_LONG } };
 
-
 static void show_io_status(char* status, const size_t n) {
-    easy_io_thread_t        *ioth;
-    easy_thread_pool_t      *tp;
-    int len = 0;
-    memset(status, 0, n);
+	easy_io_thread_t *ioth;
+	easy_thread_pool_t *tp;
+	int len = 0;
+	memset(status, 0, n);
 
+	len += snprintf(status + len, n - len, "[");
+	tp = easy_io_var.io_thread_pool;
 
-    len += snprintf(status + len, n - len, "[");
-    tp=easy_io_var.io_thread_pool;
+	easy_thread_pool_for_each(ioth, tp, 0)
+	{
+		int conn_count = 0;
+		easy_connection_t *c, *c1;
+		easy_spin_lock(&ioth->thread_lock);
+		easy_list_for_each_entry_safe(c, c1, &ioth->connected_list, conn_list_node)
+		{
+			conn_count++;
+		}
+		easy_spin_unlock(&ioth->thread_lock)
+		;
+		len += snprintf(status + len, n - len, "%d,", conn_count);
 
-    easy_thread_pool_for_each(ioth, tp, 0) {
-        int conn_count=0;
-        easy_connection_t       *c, *c1;
-        easy_spin_lock(&ioth->thread_lock);
-        easy_list_for_each_entry_safe(c, c1, &ioth->connected_list, conn_list_node) {
-            conn_count++;
-        }
-        easy_spin_unlock(&ioth->thread_lock);
-        len += snprintf(status + len, n - len, "%d,",conn_count);
-
-    }
-    len--; //除去最后一个逗号
-    snprintf(status + len, n - len, "]");
+	}
+	len--; //除去最后一个逗号
+	snprintf(status + len, n - len, "]");
 
 }
 
 static int show_tdhs_vars(THD *thd, SHOW_VAR *var, char *buff) {
 	taobao::show_optimize_status(_optimize_status, sizeof(_optimize_status));
-    show_io_status(_io_status,sizeof(_io_status));
+	show_io_status(_io_status, sizeof(_io_status));
 	var->type = SHOW_ARRAY;
 	var->value = (char *) &hs_status_variables;
 	return 0;
@@ -712,22 +737,17 @@ static SHOW_VAR daemon_tdh_socket_status_variables[] = { { "Tdhs",
 
 struct st_mysql_daemon tdh_socket_plugin = { MYSQL_DAEMON_INTERFACE_VERSION };
 
-maria_declare_plugin(handlersocket)
-{
-  MYSQL_DAEMON_PLUGIN,
-  &tdh_socket_plugin,
-  "tdh_socket",
-  "jagger.liu@gmail.com",
-  "Direct access into InnoDB",
-  PLUGIN_LICENSE_BSD,
-  tdh_socket_plugin_init,
-  tdh_socket_plugin_deinit,
-  0x0005 /* 1.0 */,
-  daemon_tdh_socket_status_variables,
-  daemon_tdh_socket_system_variables,
-  "0.5",
-  MariaDB_PLUGIN_MATURITY_BETA
-}
-maria_declare_plugin_end;
+/*
+ Plugin library descriptor
+ */
 
+mysql_declare_plugin (tdh_socket) { MYSQL_DAEMON_PLUGIN, &tdh_socket_plugin,
+"tdh_socket", "wentong@taobao.com", "proxy the handler",
+PLUGIN_LICENSE_GPL, tdh_socket_plugin_init, /* Plugin Init */
+tdh_socket_plugin_deinit, /* Plugin Deinit */
+0x0005 /* 0.5 */, daemon_tdh_socket_status_variables, /* status variables                */
+daemon_tdh_socket_system_variables, /* system variables                */
+NULL /* config options                  */
+}
+mysql_declare_plugin_end;
 

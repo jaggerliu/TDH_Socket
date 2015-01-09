@@ -24,7 +24,7 @@
 
 
 #ifndef MYSQL_DYNAMIC_PLUGIN
-#define MYSQL_DYNAMIC_PLUGIN  99
+#define MYSQL_DYNAMIC_PLUGIN
 #endif
 
 #define MYSQL_SERVER 1
@@ -50,10 +50,6 @@
 
 #define safeFree(X) my_free(X)
 
-#undef pthread_cond_timedwait
-#undef pthread_mutex_lock
-#undef pthread_mutex_unlock
-
 #define  tdhs_mysql_cond_timedwait  mysql_cond_timedwait
 #define  tdhs_mysql_mutex_lock  mysql_mutex_lock
 #define  tdhs_mysql_mutex_unlock  mysql_mutex_unlock
@@ -75,5 +71,8 @@
 #undef min
 #undef max
 
+#if MYSQL_VERSION_ID >= 50600
+#include <global_threads.h>
+#endif
 
 #endif /* MYSQL_INC_HPP_ */

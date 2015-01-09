@@ -240,7 +240,7 @@ static TDHS_INLINE TABLE * tdhs_open_table(THD * thd,
 			request_table.table.str,
 			need_write ? MDL_SHARED_WRITE : MDL_SHARED_READ, MDL_TRANSACTION);
 	Open_table_context ot_act(thd, 0);
-	if (!open_table(thd, &tables, thd->mem_root, &ot_act)) {
+	if (!open_table(thd, &tables, &ot_act)) {
 		table = tables.table;
 	}
 #else

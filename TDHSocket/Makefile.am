@@ -20,7 +20,7 @@ tdhsocket_la_SOURCES = tdh_socket.cpp tdh_socket_config.cpp tdh_socket_handler.c
 						tdh_socket_table_balance.cpp
 
 am__DEPENDENCIES_1=../libtdhs/.libs/libtdhs.a
-EXTRA_DIST = progress_report_service.c
+EXTRA_DIST = threadpool_unix.cc
 ${PRESET_LDADD}:
 	rm -f ${top_srcdir}/libtdhs/libtdhs.la
 	cd ${top_srcdir}/libtdhs && make

@@ -281,7 +281,7 @@ void tdhs_dbcontext::set_group_commit(bool gc) {
 }
 
 time_t* tdhs_dbcontext::get_thd_time() {
-	return &thd->start_time;
+	return &thd->start_time.tv_sec;
 }
 
 bool tdhs_dbcontext::need_close_table(){
@@ -512,9 +512,9 @@ int tdhs_dbcontext::execute(easy_request_t *r) {
     uint32_t seq_id = packet->seq_id;
 	tdhs_request_t &request = packet->req;
 	retcode = EASY_OK;
-	if (thd->killed != NOT_KILLED) {
+	if (thd->killed != THD::NOT_KILLED) {
 		easy_info_log("[%d] need switch to NO_KILLED at start!", thd->killed);
-		thd->killed = NOT_KILLED;
+		thd->killed = THD::NOT_KILLED;
 	}
 	thd->clear_error();
     set_process_info(seq_id, r);
@@ -580,9 +580,9 @@ int tdhs_dbcontext::execute(easy_request_t *r) {
 		}
 		easy_client_wait_cleanup(&client_wait.client_wait);
 	}
-	if (thd->killed != NOT_KILLED) {
+	if (thd->killed != THD::NOT_KILLED) {
 		easy_info_log("[%d] need switch to NO_KILLED at end!", thd->killed);
-		thd->killed = NOT_KILLED;
+		thd->killed = THD::NOT_KILLED;
 	}
     thd->reset_query();
 	return retcode != EASY_OK ? retcode : ret;
@@ -761,7 +761,7 @@ TDHS_INLINE int tdhs_dbcontext::do_find(easy_request_t *req,
 		uint32_t skip = request.get.start;
 		int r = 0;
 		while (is_unlimited || limit != 0) {
-			if (this->thd->killed != NOT_KILLED) {
+			if (this->thd->killed != THD::NOT_KILLED) {
 				hnd->ha_index_or_rnd_end();
 				return tdhs_response_error(response,
 						CLIENT_STATUS_SERVICE_UNAVAILABLE,
